@@ -1,0 +1,144 @@
+import type { Book, KnowledgePoint } from '../types'
+
+export const books: Book[] = [
+  {
+    id: 1,
+    title: '第一冊｜淨零國際趨勢與碳定價',
+    shortTitle: '第一冊',
+    status: 'ready',
+    chapters: ['淨零排放國際趨勢及現況', '碳環境稅費與市場機制', '附錄與名詞定義'],
+    completion: 100,
+  },
+  ...[2, 3, 4, 5].map((id) => ({
+    id,
+    title: `第${['', '', '二', '三', '四', '五'][id]}冊｜待上傳`,
+    shortTitle: `第${['', '', '二', '三', '四', '五'][id]}冊`,
+    status: 'pending' as const,
+    chapters: [],
+    completion: 0,
+  })),
+]
+
+export const knowledgePoints: KnowledgePoint[] = [
+  {
+    id: 'paris', chapter: '國際氣候治理', title: '《巴黎協定》：兩個溫度要一起記',
+    plain: '全球共同方向是把升溫控制在遠低於工業化前 2°C，並努力限制在 1.5°C。考題最常把兩句拆開，誘使你只記其中一個數字。',
+    mustKnow: ['2015 年 COP21 通過《巴黎協定》', '共同但有區別的責任與各自能力（CBDR-RC）', '各國以國家自定貢獻（NDC）提出行動'],
+    traps: ['1.5°C 是努力追求的限制目標，不是把 2°C 完全刪掉', '《巴黎協定》與《京都議定書》的適用架構不同'],
+    pages: '正文 p.1–4', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'ipcc', chapter: '國際氣候治理', title: 'IPCC 報告與科學基礎',
+    plain: 'IPCC 不替各國立法，而是彙整科學證據，提供政策判斷基礎。教材與筆記特別標出 SR1.5、AR6 與升溫情境。',
+    mustKnow: ['2018 年《全球升溫 1.5°C 特別報告》', 'AR6 綜合報告在 2023 年完成', '減緩、調適與損失損害是不同概念'],
+    traps: ['把 IPCC 當成締約或執法機構', '把報告發布年與締約方大會年混淆'],
+    pages: '正文 p.1–8', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'ndc', chapter: '國際氣候治理', title: 'NDC：各國自己提出，但不是隨便承諾',
+    plain: 'NDC 是締約方依自身條件提出的減碳與調適貢獻，會定期更新並接受全球盤點的集體檢視。',
+    mustKnow: ['NDC 全名為 Nationally Determined Contributions', '巴黎協定核心履約工具', '全球盤點（GST）每五年檢視集體進展'],
+    traps: ['NDC 不是全球統一配額', '全球盤點不是逐國裁罰機制'],
+    pages: '正文 p.1–12', handwritten: true, checkedOn: '2026-09-12', mutable: true,
+  },
+  {
+    id: 'glasgow', chapter: '國際氣候治理', title: '格拉斯哥氣候協議的高頻語句',
+    plain: '示範題直接考過：逐步減少未裝設減碳設施的煤電，並逐步淘汰無效率的化石燃料補貼。',
+    mustKnow: ['煤電用語是 phase down', '補貼用語是 phase out inefficient fossil fuel subsidies', 'COP26 於格拉斯哥舉行'],
+    traps: ['不是全面立即禁止所有煤炭', '不是淘汰核能或氫能補貼'],
+    pages: '正文 p.12–18', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'gst', chapter: '國際氣候治理', title: '全球盤點與 COP28',
+    plain: '全球盤點像全班總檢討：看世界整體離巴黎目標還有多遠，再回饋下一輪 NDC，不是替每個國家單獨打分。',
+    mustKnow: ['第一次全球盤點於 COP28 完成', '檢視減緩、調適、執行手段與支持', '結果用來提高後續行動企圖心'],
+    traps: ['全球盤點不等於企業溫室氣體盤查', '不直接發放或交易碳權'],
+    pages: '正文 p.18–26', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'taiwan', chapter: '臺灣淨零路徑', title: '臺灣 2050 淨零與階段目標',
+    plain: '長期目標、階段目標和政策工具要分開記。2050 是淨零目標年；NDC 的 2030、2035 數字屬會更新的階段目標。',
+    mustKnow: ['《氣候變遷因應法》將 2050 淨零入法', '四大轉型：能源、產業、生活、社會', '十二項關鍵戰略用來支撐轉型'],
+    traps: ['2050 淨零不等於完全零排放', '舊教材的 NDC 數字可能已被新版目標取代'],
+    pages: '正文 p.26–43', handwritten: true, checkedOn: '2026-09-12', mutable: true,
+  },
+  {
+    id: 'mitigation-adaptation', chapter: '氣候行動', title: '減緩、調適、損失與損害',
+    plain: '減緩處理氣候變遷的原因，調適處理已發生或預期衝擊；損失與損害則關注無法完全避免的後果。',
+    mustKnow: ['減緩：減少排放或增加碳匯', '調適：降低脆弱度與風險', '損失與損害：超出可調適範圍的衝擊'],
+    traps: ['築防洪設施是調適，不是減緩', '再生能源替代化石燃料主要是減緩'],
+    pages: '正文 p.20–35；附錄 p.90–91', handwritten: false, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'pricing', chapter: '碳定價', title: '碳定價工具總圖',
+    plain: '碳定價的共同目的，是讓排放成本進入決策；差異在價格由政府直接訂定，或由市場交易形成。',
+    mustKnow: ['碳稅／碳費：價格較明確，排放量不確定', 'ETS：總量較明確，價格由市場形成', '內部碳價是組織內部決策工具'],
+    traps: ['碳稅與 ETS 不是同一制度', '內部碳價不等於政府向企業徵收'],
+    pages: '稅費篇 p.44–53', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'tax-fee', chapter: '碳定價', title: '碳稅、碳費與環境稅費',
+    plain: '環境稅費的優點是能利用既有稅費行政基礎、提供持續價格訊號；但制度設計仍需處理公平性、產業衝擊與收入用途。',
+    mustKnow: ['稅／費均可提供減排誘因', '費率、課徵對象與收入用途是常考欄位', '價格水準過低會削弱減排效果'],
+    traps: ['有徵收不代表必然達成固定排放總量', '稅費不是碳信用額度'],
+    pages: '稅費篇 p.44–61', handwritten: true, checkedOn: '2026-09-12', mutable: true,
+  },
+  {
+    id: 'ets', chapter: '碳市場', title: 'ETS：先定總量，再讓配額流動',
+    plain: '總量管制與排放交易先設定排放上限，再分配或拍賣配額；排放較低者可出售剩餘配額。',
+    mustKnow: ['Cap 決定總量上限', 'Allowance 是制度下的排放配額', 'Trade 提供低成本減量的彈性'],
+    traps: ['配額不是自願減量專案產生的 credit', '有交易市場不代表排放上限不存在'],
+    pages: '稅費篇 p.52–68', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'credit', chapter: '碳市場', title: 'Allowance、Credit、Permit 一次分清',
+    plain: 'Allowance 通常來自總量管制制度的配額；credit 通常來自減量或移除專案；permit 泛指主管機關核准的排放許可。',
+    mustKnow: ['一單位通常對應一公噸 CO2e，但法律性質不同', 'credit 必須有基線、外加性與 MRV', '不同制度未必能互相抵換'],
+    traps: ['名稱相似不代表可自由互換', '碳費是價格工具，不是額度'],
+    pages: '稅費篇 p.60–78；附錄 p.90–99', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'mechanisms', chapter: '碳市場', title: '京都機制與自願市場',
+    plain: 'CDM、JI 與排放交易是京都議定書下的典型彈性機制；VCS、Gold Standard 則是自願市場常見標準。',
+    mustKnow: ['CDM：清潔發展機制', 'JI：共同履行', 'VCS／Verified Carbon Standard 與 Gold Standard 屬自願性標準'],
+    traps: ['自願性標準不是聯合國條約', 'CDM 不等於 CCS'],
+    pages: '稅費篇 p.46–57；附錄 p.92–99', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'additionality', chapter: '減量專案', title: '外加性、基線與 MRV',
+    plain: '要核發可信額度，必須證明減量不是本來就會發生；先設定沒有專案時的基線，再用可量測、可報告、可查驗的方法證明差額。',
+    mustKnow: ['外加性：超越法規或既有商業常態', '基線：沒有專案時的合理排放情境', 'MRV：量測、報告、查驗'],
+    traps: ['只要減排就自動具外加性', '基線不是專案完成後才任意設定'],
+    pages: '稅費篇 p.58–74；附錄 p.90–105', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'leakage', chapter: '減量專案', title: '碳洩漏與邊界外影響',
+    plain: '若一地嚴格減排導致生產與排放轉往別處，全球排放未必下降，這就是碳洩漏。專案也要檢查邊界外是否增加排放。',
+    mustKnow: ['碳邊境調整機制的一項目的為降低碳洩漏', '專案洩漏量會影響淨減量', '不能只看場內排放下降'],
+    traps: ['碳洩漏不是設備漏氣的唯一意思', '移轉產能不等於真正減量'],
+    pages: '正文 p.30–43；附錄 p.92–99', handwritten: false, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'budget', chapter: '淨零基礎', title: '碳預算、碳強度與碳足跡',
+    plain: '碳預算是為特定溫控目標可再排放的累積量；碳強度是每單位產出排放；碳足跡則是產品、活動或組織造成的總排放。',
+    mustKnow: ['總排放下降與碳強度下降不是同一件事', '碳足跡以 CO2e 彙整不同溫室氣體', '碳預算會隨累積排放被消耗'],
+    traps: ['產量增長時，強度下降但總量仍可能上升', 'CO2e 不是只計二氧化碳'],
+    pages: '正文 p.2–10；附錄 p.92–101', handwritten: true, checkedOn: '2026-09-12', mutable: false,
+  },
+  {
+    id: 'ccs', chapter: '淨零技術', title: 'CCS、CCUS、CDR 與自然碳匯',
+    plain: 'CCS 捕捉並封存二氧化碳；CCUS 多了利用；CDR 是從大氣移除二氧化碳。造林與生態復育可形成自然碳匯。',
+    mustKnow: ['CCS：Capture and Storage', 'CCUS：Capture, Utilization and Storage', 'CDR：Carbon Dioxide Removal'],
+    traps: ['捕捉排放源的 CO2 不必然等於從大氣移除', '造林不是避免所有減排的替代方案'],
+    pages: '附錄 p.90–109', handwritten: false, checkedOn: '2026-09-12', mutable: false,
+  },
+]
+
+export const timeline = [
+  ['1992', 'UNFCCC', '建立全球氣候治理基本框架'],
+  ['1997', '《京都議定書》', '對已開發國家設定量化減量承諾'],
+  ['2015', '《巴黎協定》', '所有締約方以 NDC 參與，追求 1.5°C'],
+  ['2021', '格拉斯哥氣候協議', '煤電與無效率化石燃料補貼成為高頻考點'],
+  ['2023', 'COP28／首次全球盤點', '檢視巴黎目標整體進度並推動轉型'],
+  ['2050', '臺灣淨零目標', '《氣候變遷因應法》明定長期方向'],
+]
