@@ -9,10 +9,18 @@ export const books: Book[] = [
     chapters: ['淨零排放國際趨勢及現況', '碳環境稅費與市場機制', '附錄與名詞定義'],
     completion: 100,
   },
-  ...[2, 3, 4, 5].map((id) => ({
+  {
+    id: 2,
+    title: '第二冊｜產品碳足跡',
+    shortTitle: '第二冊',
+    status: 'ready',
+    chapters: ['生命週期評估', '產品碳足跡盤查', '示範案例', '產品類別規則（PCR）', '自願性產品碳足跡標籤'],
+    completion: 100,
+  },
+  ...[3, 4, 5].map((id) => ({
     id,
-    title: `第${['', '', '二', '三', '四', '五'][id]}冊｜待上傳`,
-    shortTitle: `第${['', '', '二', '三', '四', '五'][id]}冊`,
+    title: `第${['', '', '', '三', '四', '五'][id]}冊｜待上傳`,
+    shortTitle: `第${['', '', '', '三', '四', '五'][id]}冊`,
     status: 'pending' as const,
     chapters: [],
     completion: 0,
