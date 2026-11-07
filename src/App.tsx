@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { books, knowledgePoints, timeline } from './data/books'
-import { questions } from './data/questions'
+import { allQuestions, bookQuestions } from './data/allQuestions'
+import { BookTwo } from './components/BookTwo'
 import { formatDuration, grade, makeSession, seededShuffle } from './lib/exam'
 import { emptyState, loadState, saveState, wrongQuestionIds } from './lib/storage'
 import type { ActiveSession, Attempt, StoredState } from './types'
@@ -134,21 +135,23 @@ function Analysis() {
 }
 
 function PendingBook({ id }: { id: number }) {
-  const names = ['','溫室氣體盤查','產品碳足跡','減量策略與管理','淨零轉型實務']
-  return <main className="pending-page"><span className="big-number">0{id}</span><div className="eyebrow">BOOK {String(id).padStart(2,'0')} · WAITING</div><h1>第{['','二','三','四','五'][id - 1]}冊<br/><em>等待教材上傳</em></h1><p>預定主題：{names[id - 1] || '待依教材確認'}。上傳後會依相同流程整理白話筆記、手寫重點、考點分析與練習題。</p><div className="pending-steps"><span>01 掃描與視覺複核</span><span>02 重點與頁碼索引</span><span>03 題庫與驗證</span></div><div className="warning"><span>!</span><div><b>尚未納入正式模考範圍</b><p>目前網站的正式模式僅使用第一冊 120 題。</p></div></div></main>
+  const names: string[] = []
+  return <main className="pending-page"><span className="big-number">0{id}</span><div className="eyebrow">BOOK {String(id).padStart(2,'0')} · WAITING</div><h1>第{['','二','三','四','五'][id - 1]}冊<br/><em>等待教材上傳</em></h1><p>預定主題：{names[id - 1] || '待依教材確認'}。上傳後會依相同流程整理白話筆記、手寫重點、考點分析與練習題。</p><div className="pending-steps"><span>01 掃描與視覺複核</span><span>02 重點與頁碼索引</span><span>03 題庫與驗證</span></div><div className="warning"><span>!</span><div><b>尚未納入正式模考範圍</b><p>目前網站的正式模式使用第一冊與第二冊題庫，本冊上傳後才會加入。</p></div></div></main>
 }
 
 function Practice({ state, setState }: { state: StoredState; setState: (s: StoredState) => void }) {
   const [session, setSession] = useState<ActiveSession | null>(state.activeSession)
   const [result, setResult] = useState<Attempt | null>(null)
   const [now, setNow] = useState(Date.now())
+  const [scope, setScope] = useState<'all' | 1 | 2>('all')
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t) }, [])
   useEffect(() => { if (session?.deadlineAt && now >= session.deadlineAt) submit(true) }, [now, session?.deadlineAt])
   const syncSession = (next: ActiveSession | null) => { setSession(next); setState({ ...state, activeSession: next }) }
   const start = (mode: ActiveSession['mode']) => {
     const seed = Date.now()
     const wrong = wrongQuestionIds(state.attempts)
-    const pool = mode === 'wrong' ? questions.filter((q) => wrong.includes(q.id)) : questions
+    const base = bookQuestions(scope)
+    const pool = mode === 'wrong' ? allQuestions.filter((q) => wrong.includes(q.id)) : base
     const count = mode === 'mock' ? 50 : mode === 'unit' ? 10 : Math.min(20, pool.length)
     if (!count) return
     const next = makeSession(seededShuffle(pool, seed).slice(0, count).map((q) => q.id), mode, mode === 'mock' ? 90 : null)
@@ -159,7 +162,7 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
     const unanswered = session.questionIds.filter((id) => session.answers[id] === undefined).length
     if (!auto && unanswered && !confirm(`還有 ${unanswered} 題未作答，仍要交卷嗎？`)) return
     if (!auto && !confirm('確定交卷？交卷後不能修改答案。')) return
-    const attempt = grade(session, questions)
+    const attempt = grade(session, allQuestions)
     setResult(attempt); setSession(null)
     setState({ ...state, activeSession: null, attempts: [attempt, ...state.attempts] })
   }
@@ -171,7 +174,7 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
   const avgTime = mockAttempts.length ? Math.round(mockAttempts.reduce((sum, a) => sum + a.durationSeconds, 0) / mockAttempts.length) : 0
   const wrongCount = wrongQuestionIds(attempts).length
   return <main className="practice-page">
-    <section className="practice-hero"><div><div className="eyebrow">PRACTICE DASHBOARD</div><h1>把讀過的，<br/><em>變成拿得到的分數。</em></h1><p>你的進度與作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>第一冊</b></div></section>
+    <section className="practice-hero"><div><div className="eyebrow">PRACTICE DASHBOARD</div><h1>把讀過的，<br/><em>變成拿得到的分數。</em></h1><p>你的進度與作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>{scope === 'all' ? '第一、二冊' : scope === 1 ? '第一冊' : '第二冊'}</b></div></section>
     <section className="stats-grid">
       <article><span>{icons.check}</span><p>完成測驗</p><b>{attempts.length}</b><small>次</small></article>
       <article><span>{icons.spark}</span><p>個人最佳</p><b>{scores.length ? Math.max(...scores) : '—'}</b><small>{scores.length ? '分' : '尚無紀錄'}</small></article>
@@ -180,9 +183,10 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
     </section>
     <section className="practice-content">
       <div><div className="section-heading compact"><span className="section-number">01</span><div><span className="kicker">CHOOSE A MODE</span><h2>開始練習</h2></div></div>
+        <div className="scope-picker" role="radiogroup" aria-label="題庫範圍">{([['all','第一＋二冊（共 177 題）'],[1,'第一冊（120 題）'],[2,'第二冊（57 題）']] as const).map(([v,l]) => <button key={String(v)} role="radio" aria-checked={scope === v} className={scope === v ? 'selected' : ''} onClick={() => setScope(v)}>{l}</button>)}</div>
         <div className="mode-grid">
-          <ModeCard label="暖身" title="第一冊單元練習" detail="10 題 · 不限時" text="快速確認剛讀完的概念，適合每天開始時暖機。" onClick={() => start('unit')}/>
-          <ModeCard label="正式規格" title="50 題模擬測驗" detail="90 分鐘 · 每題 2 分" text="固定倒數、離頁不停，60 分及格。目前僅涵蓋第一冊。" onClick={() => start('mock')} featured/>
+          <ModeCard label="暖身" title="單元練習" detail="10 題 · 不限時" text="快速確認剛讀完的概念，適合每天開始時暖機。" onClick={() => start('unit')}/>
+          <ModeCard label="正式規格" title="50 題模擬測驗" detail="90 分鐘 · 每題 2 分" text="固定倒數、離頁不停，60 分及格。範圍依上方選擇。" onClick={() => start('mock')} featured/>
           <ModeCard label="複盤" title="錯題重練" detail={`${wrongCount} 題待複習`} text="從歷次錯題抽出最多 20 題，再做一次直到記牢。" onClick={() => start('wrong')} disabled={!wrongCount}/>
         </div>
       </div>
@@ -201,7 +205,7 @@ function History({ attempts }: { attempts: Attempt[] }) {
 }
 
 function Exam({ session, setSession, submit, now }: { session: ActiveSession; setSession:(s:ActiveSession)=>void; submit:(auto?:boolean)=>void; now:number }) {
-  const selected = session.questionIds.map((id) => questions.find((q) => q.id === id)!).filter(Boolean)
+  const selected = session.questionIds.map((id) => allQuestions.find((q) => q.id === id)!).filter(Boolean)
   const question = selected[session.currentIndex]
   const remaining = session.deadlineAt ? Math.max(0, Math.ceil((session.deadlineAt - now) / 1000)) : null
   const update = (patch: Partial<ActiveSession>) => setSession({ ...session, ...patch })
@@ -209,7 +213,7 @@ function Exam({ session, setSession, submit, now }: { session: ActiveSession; se
   const flagged = session.flaggedIds.includes(question.id)
   const toggleFlag = () => update({ flaggedIds: flagged ? session.flaggedIds.filter((id) => id !== question.id) : [...session.flaggedIds, question.id] })
   return <main className="exam-page">
-    <header className="exam-header"><div><span className="eyebrow">{session.mode === 'mock' ? 'MOCK EXAM' : 'PRACTICE'}</span><h1>{session.mode === 'mock' ? '第一冊 50 題模擬測驗' : session.mode === 'wrong' ? '錯題重練' : '第一冊單元練習'}</h1></div><div className={`timer ${remaining !== null && remaining < 600 ? 'urgent' : ''}`}>{icons.clock}<b>{remaining === null ? '不限時' : formatDuration(remaining)}</b><small>離開頁面仍持續</small></div></header>
+    <header className="exam-header"><div><span className="eyebrow">{session.mode === 'mock' ? 'MOCK EXAM' : 'PRACTICE'}</span><h1>{session.mode === 'mock' ? '50 題模擬測驗' : session.mode === 'wrong' ? '錯題重練' : '單元練習'}</h1></div><div className={`timer ${remaining !== null && remaining < 600 ? 'urgent' : ''}`}>{icons.clock}<b>{remaining === null ? '不限時' : formatDuration(remaining)}</b><small>離開頁面仍持續</small></div></header>
     <div className="exam-layout"><aside><div className="exam-progress"><b>{Object.keys(session.answers).length}</b> / {selected.length} 已答</div><div className="palette">{selected.map((q, i) => <button key={q.id} onClick={() => update({currentIndex:i})} className={`${i === session.currentIndex ? 'current' : ''} ${session.answers[q.id] !== undefined ? 'answered' : ''} ${session.flaggedIds.includes(q.id) ? 'flagged' : ''}`}>{i+1}</button>)}</div><div className="legend"><span><i className="answered"/>已答</span><span><i/>未答</span><span><i className="flagged"/>標記</span></div><button className="submit" onClick={() => submit(false)}>交卷</button></aside>
       <section className="question-panel"><div className="question-meta"><span>第 {session.currentIndex + 1} 題 / {selected.length}</span><span>{question.chapter} · {question.difficulty}</span><button className={flagged ? 'active' : ''} onClick={toggleFlag}>⚑ {flagged ? '已標記' : '稍後再看'}</button></div><h2>{question.stem}</h2><div className="options">{question.options.map((option, i) => <button key={option} className={session.answers[question.id] === i ? 'selected' : ''} onClick={() => choose(i)}><span>{String.fromCharCode(65+i)}</span>{option}</button>)}</div><footer><button disabled={session.currentIndex === 0} onClick={() => update({currentIndex:session.currentIndex-1})}>← 上一題</button><button disabled={session.currentIndex === selected.length-1} onClick={() => update({currentIndex:session.currentIndex+1})}>下一題 →</button></footer></section>
     </div>
@@ -217,7 +221,7 @@ function Exam({ session, setSession, submit, now }: { session: ActiveSession; se
 }
 
 function Result({ attempt, onBack }: { attempt: Attempt; onBack:()=>void }) {
-  const selected = attempt.questionIds.map((id) => questions.find((q) => q.id === id)!).filter(Boolean)
+  const selected = attempt.questionIds.map((id) => allQuestions.find((q) => q.id === id)!).filter(Boolean)
   return <main className="result-page"><section className={`score-card ${attempt.score >= 60 ? 'passed' : ''}`}><span>{attempt.score >= 60 ? 'PASSED' : 'KEEP GOING'}</span><b>{attempt.score}</b><small>分</small><p>{selected.length-attempt.wrongQuestionIds.length} / {selected.length} 題正確 · 用時 {formatDuration(attempt.durationSeconds)}</p><button onClick={onBack}>返回練習中心</button></section>
     <section className="section"><div className="section-heading"><span className="section-number">01</span><div><span className="kicker">UNIT PERFORMANCE</span><h2>各單元正確率</h2></div></div><div className="unit-stats">{Object.entries(attempt.unitStats).map(([name,s]) => <div key={name}><span>{name}</span><div><i style={{width:`${s.correct/s.total*100}%`}}/></div><b>{Math.round(s.correct/s.total*100)}%</b></div>)}</div></section>
     <section className="section"><div className="section-heading"><span className="section-number">02</span><div><span className="kicker">REVIEW</span><h2>逐題解析</h2></div></div><div className="review-list">{selected.map((q,i) => { const answer = attempt.answers[q.id]; const correct = answer === q.answer; return <details key={q.id} className={correct ? 'correct' : 'wrong'} open={!correct}><summary><span>{i+1}</span><b>{correct ? '答對' : answer === undefined ? '未作答' : '答錯'}</b><p>{q.stem}</p></summary><div className="review-body">{q.options.map((option,oi)=><div key={option} className={oi===q.answer?'right-option':oi===answer?'your-option':''}><b>{String.fromCharCode(65+oi)}. {option}</b><p>{q.explanations[oi]}</p></div>)}<div className="memory">記憶鉤子：{q.memoryHook}</div><small>{q.pages} · {q.mutable ? '⚠ 可變法規資訊 · ' : ''}核對 {q.checkedOn}</small></div></details>})}</div></section>
@@ -228,6 +232,6 @@ export default function App() {
   const route = useHashRoute()
   const [state, setStateValue] = useState<StoredState>(() => typeof localStorage === 'undefined' ? emptyState : loadState())
   const setState = (next: StoredState) => { setStateValue(next); saveState(next) }
-  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
-  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊資料核對日 2026.09.12</small></footer></>
+  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
+  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07</small></footer></>
 }

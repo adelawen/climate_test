@@ -91,3 +91,24 @@ export interface StoredState {
   activeSession: ActiveSession | null
   readKnowledgeIds: string[]
 }
+
+/* ---------- 第二冊：章節式詳細筆記 ---------- */
+
+export type Priority = 'S' | 'A' | 'B'
+
+export type NoteBlock =
+  | { type: 'p'; text: string }
+  | { type: 'list'; items: string[]; ordered?: boolean }
+  | { type: 'table'; caption?: string; head: string[]; rows: string[][]; page: string; note?: string }
+  | { type: 'figure'; id: string; caption: string; page: string; redrawn?: string }
+  | { type: 'callout'; kind: 'exam' | 'trap' | 'tip' | 'verify'; text: string }
+
+export interface NoteSection {
+  id: string
+  chapter: string
+  title: string
+  pages: string
+  priority: Priority
+  officialHits?: string
+  blocks: NoteBlock[]
+}
