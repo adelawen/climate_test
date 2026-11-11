@@ -22,7 +22,7 @@ export interface KnowledgePoint {
   mutable?: boolean
 }
 
-export type QuestionKind = '教材重點' | '官方題型' | '情境整合'
+export type QuestionKind = '教材重點' | '官方題型' | '情境整合' | '熱議考點'
 export type Difficulty = '基礎' | '理解' | '情境'
 
 export interface Question {
