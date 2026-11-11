@@ -1,18 +1,19 @@
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { book2Chapters, book2CheckedOn, book2Sections } from '../data/book2'
 import { questions2 } from '../data/questions2'
-import { pageLabel } from '../lib/pages'
+import { PageLabelContext } from '../lib/labelContext'
 import type { NoteBlock, NoteSection, Priority, StoredState } from '../types'
 import { Figure } from './Book2Figures'
 
 const calloutTitle = { exam: '考點', trap: '易錯', tip: '記憶', verify: '核對' } as const
-const priorityText: Record<Priority, string> = { S: 'S 必考', A: 'A 常考', B: 'B 加強' }
+export const priorityText: Record<Priority, string> = { S: 'S 必考', A: 'A 常考', B: 'B 加強' }
 
 function PageChip({ text }: { text: string }) {
-  return <span className="page-chip" title="講義頁碼（括號內為掃描檔中的位置）">📖 {pageLabel(text)}</span>
+  const label = useContext(PageLabelContext)
+  return <span className="page-chip" title="講義頁碼（括號內為掃描檔中的位置）">📖 {label(text)}</span>
 }
 
-function Block({ block }: { block: NoteBlock }) {
+export function Block({ block }: { block: NoteBlock }) {
   switch (block.type) {
     case 'p': return <p>{block.text}</p>
     case 'list': {
@@ -34,7 +35,7 @@ function Block({ block }: { block: NoteBlock }) {
   }
 }
 
-function SectionCard({ section, read, toggle }: { section: NoteSection; read: boolean; toggle: () => void }) {
+export function SectionCard({ section, read, toggle }: { section: NoteSection; read: boolean; toggle: () => void }) {
   return <article className={`note-section ${read ? 'read' : ''}`} id={section.id}>
     <header>
       <div className="note-meta"><span className={`prio prio-${section.priority}`}>{priorityText[section.priority]}</span><PageChip text={section.pages} /></div>
