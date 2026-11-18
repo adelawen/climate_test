@@ -1,6 +1,7 @@
 import { useContext, useMemo, useState } from 'react'
 import { book2Chapters, book2CheckedOn, book2Sections } from '../data/book2'
-import { questions2 } from '../data/questions2'
+import { bookQuestions } from '../data/allQuestions'
+const questions2 = bookQuestions(2)
 import { PageLabelContext } from '../lib/labelContext'
 import type { NoteBlock, NoteSection, Priority, StoredState } from '../types'
 import { Figure } from './Book2Figures'

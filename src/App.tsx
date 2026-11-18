@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { books, knowledgePoints, timeline } from './data/books'
 import { allQuestions, bookQuestions } from './data/allQuestions'
-import { BookTwo } from './components/BookTwo'
+import { BookTwo, SectionCard } from './components/BookTwo'
+import { book1ExtraChapters, book1ExtraSections } from './data/book1Extra'
+import { PageLabelContext } from './lib/labelContext'
 import { BookThree } from './components/BookThree'
 import { formatDuration, grade, makeSession, seededShuffle } from './lib/exam'
 import { emptyState, loadState, saveState, wrongQuestionIds } from './lib/storage'
@@ -50,8 +52,8 @@ function ProgressRing({ value }: { value: number }) {
 }
 
 function BookOne({ state, setState }: { state: StoredState; setState: (s: StoredState) => void }) {
-  const [tab, setTab] = useState<'notes' | 'analysis'>('notes')
-  const done = state.readKnowledgeIds.length
+  const [tab, setTab] = useState<'notes' | 'extra' | 'analysis'>('notes')
+  const done = knowledgePoints.filter((p) => state.readKnowledgeIds.includes(p.id)).length
   const progress = Math.round((done / knowledgePoints.length) * 100)
   const days = Math.max(0, Math.ceil((new Date('2026-11-21T09:00:00+08:00').getTime() - Date.now()) / 86_400_000))
   const toggleRead = (id: string) => setState({
@@ -70,17 +72,18 @@ function BookOne({ state, setState }: { state: StoredState; setState: (s: Stored
     <section className="overview">
       <div><span className="kicker">YOUR PROGRESS</span><h2>第一冊學習進度</h2><p>每讀完一張知識卡就勾選，進度只保存在這台裝置。</p></div>
       <ProgressRing value={progress}/>
-      <div className="mini-stat"><b>120</b><span>練習題</span></div>
+      <div className="mini-stat"><b>{bookQuestions(1).length}</b><span>練習題</span></div>
       <div className="mini-stat"><b>54</b><span>掃描頁</span></div>
       <div className="mini-stat"><b>2026.09.12</b><span>法規核對日</span></div>
     </section>
 
     <div className="subtabs" role="tablist">
       <button className={tab === 'notes' ? 'selected' : ''} onClick={() => setTab('notes')} role="tab">重點整理</button>
+      <button className={tab === 'extra' ? 'selected' : ''} onClick={() => setTab('extra')} role="tab">補充筆記（RE100／碳權／碳費／CBAM）</button>
       <button className={tab === 'analysis' ? 'selected' : ''} onClick={() => setTab('analysis')} role="tab">考點分析</button>
     </div>
 
-    {tab === 'notes' ? <Notes toggleRead={toggleRead} readIds={state.readKnowledgeIds}/> : <Analysis/>}
+    {tab === 'notes' ? <Notes toggleRead={toggleRead} readIds={state.readKnowledgeIds}/> : tab === 'extra' ? <ExtraNotes toggleRead={toggleRead} readIds={state.readKnowledgeIds}/> : <Analysis/>}
   </main>
 }
 
@@ -112,6 +115,19 @@ function Notes({ toggleRead, readIds }: { toggleRead: (id: string) => void; read
       </tbody></table></div>
     </section>
   </>
+}
+
+function ExtraNotes({ toggleRead, readIds }: { toggleRead: (id: string) => void; readIds: string[] }) {
+  return <PageLabelContext.Provider value={(t) => t}>
+    <section className="warning"><span>!</span><div><b>補充筆記說明</b><p>第一冊原本只有知識卡，這裡依課程考點方向補上 RE100、碳權、自願 vs 強制市場、碳稅 vs 碳費、我國碳費計算與權責、CBAM、12 項關鍵戰略與跨冊整合。來源為官方公告與公開資料，不是第一冊講義頁碼；費率、日期屬可變資訊。</p></div></section>
+    {book1ExtraChapters.map((c, i) => {
+      const list = book1ExtraSections.filter((s) => s.chapter === c)
+      return <section className="section" key={c}>
+        <div className="section-heading"><span className="section-number">{`X${i + 1}`}</span><div><span className="kicker">SUPPLEMENT</span><h2>{c}</h2></div></div>
+        <div className="note-stack">{list.map((s) => <SectionCard key={s.id} section={s} read={readIds.includes(`b1x:${s.id}`)} toggle={() => toggleRead(`b1x:${s.id}`)} />)}</div>
+      </section>
+    })}
+  </PageLabelContext.Provider>
 }
 
 function Analysis() {
