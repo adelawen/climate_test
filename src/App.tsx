@@ -6,11 +6,12 @@ import { book1ExtraChapters, book1ExtraSections } from './data/book1Extra'
 import { PageLabelContext } from './lib/labelContext'
 import { BookThree } from './components/BookThree'
 import { BookFour } from './components/BookFour'
+import { Review } from './components/Review'
 import { formatDuration, grade, makeSession, seededShuffle } from './lib/exam'
 import { emptyState, loadState, saveState, wrongQuestionIds } from './lib/storage'
 import type { ActiveSession, Attempt, StoredState } from './types'
 
-type Route = { kind: 'book'; id: number } | { kind: 'practice' }
+type Route = { kind: 'book'; id: number } | { kind: 'practice' } | { kind: 'review' }
 
 const icons = { leaf: '◒', clock: '◷', check: '✓', spark: '✦', chart: '↗' }
 
@@ -19,6 +20,7 @@ function readRoute(): Route {
   const match = hash.match(/^\/book\/(\d)$/)
   if (match) return { kind: 'book', id: Number(match[1]) }
   if (hash === '/practice') return { kind: 'practice' }
+  if (hash === '/review') return { kind: 'review' }
   return { kind: 'book', id: 1 }
 }
 
@@ -43,6 +45,7 @@ function Header({ route }: { route: Route }) {
     <button className="menu-button" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="開啟導覽">☰</button>
     <nav className={open ? 'nav open' : 'nav'} aria-label="主要導覽" onClick={() => setOpen(false)}>
       {books.map((book) => <a key={book.id} className={active(book.id) ? 'active' : ''} href={`#/book/${book.id}`}>第{['一','二','三','四','五'][book.id - 1]}冊</a>)}
+      <a className={route.kind === 'review' ? 'active' : ''} href="#/review">考前速讀</a>
       <a className={route.kind === 'practice' ? 'active accent' : 'accent'} href="#/practice">考前刷題</a>
     </nav>
   </header>
@@ -250,6 +253,6 @@ export default function App() {
   const route = useHashRoute()
   const [state, setStateValue] = useState<StoredState>(() => typeof localStorage === 'undefined' ? emptyState : loadState())
   const setState = (next: StoredState) => { setStateValue(next); saveState(next) }
-  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : route.id === 4 ? <BookFour state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
+  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.kind === 'review' ? <Review state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : route.id === 4 ? <BookFour state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
   return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07 · 第三冊核對日 2026.11.11 · 第四冊核對日 2026.11.18</small></footer></>
 }
