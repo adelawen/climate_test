@@ -51,7 +51,7 @@ for (const s of book2Sections) {
   const pages = [...s.pages.matchAll(/p\.(\d+)/g)].map((m) => Number(m[1]))
   if (!pages.length || pages.some((p) => p < 1 || p > 95) || pages.some((p) => !pdfLocate(p))) errors.push(`${s.id}: 頁碼不合法`)
   for (const b of s.blocks) {
-    if ((b.type === 'table' || b.type === 'figure') && !/p\.\d+/.test(b.page)) errors.push(`${s.id}: 表格或圖缺少講義頁碼`)
+    if ((b.type === 'table' || b.type === 'figure' || b.type === 'flow') && !/p\.\d+/.test(b.page)) errors.push(`${s.id}: 表格或圖缺少講義頁碼`)
   }
 }
 console.log(`✓ 第二冊筆記 ${book2Sections.length} 節，表格 ${book2Sections.flatMap((s) => s.blocks).filter((b) => b.type === 'table').length}、圖 ${book2Sections.flatMap((s) => s.blocks).filter((b) => b.type === 'figure').length}`)
@@ -62,7 +62,7 @@ for (const s of book3Sections) {
   ids3.add(s.id)
   if (!pageRefsValid(s.pages)) errors.push(`${s.id}: 頁碼不合法（${s.pages}）`)
   for (const b of s.blocks) {
-    if ((b.type === 'table' || b.type === 'figure') && !pageRefsValid(b.page)) errors.push(`${s.id}: 表格或圖頁碼不合法（${b.page}）`)
+    if ((b.type === 'table' || b.type === 'figure' || b.type === 'flow') && !pageRefsValid(b.page)) errors.push(`${s.id}: 表格或圖頁碼不合法（${b.page}）`)
   }
 }
 for (const q of [...questions3, ...questions3x]) {
@@ -79,7 +79,7 @@ const ids1x = new Set<string>()
 for (const s of book1ExtraSections) {
   if (ids1x.has(s.id)) errors.push(`第一冊補充筆記 ID 重複：${s.id}`)
   ids1x.add(s.id)
-  for (const b of s.blocks) if ((b.type === 'table' || b.type === 'figure') && !b.page) errors.push(`${s.id}: 表格缺來源`)
+  for (const b of s.blocks) if ((b.type === 'table' || b.type === 'figure' || b.type === 'flow') && !b.page) errors.push(`${s.id}: 表格缺來源`)
 }
 console.log(`✓ 第一冊補充筆記 ${book1ExtraSections.length} 節`)
 if (errors.length) {

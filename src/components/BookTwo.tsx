@@ -33,6 +33,17 @@ export function Block({ block }: { block: NoteBlock }) {
       <figcaption>{block.caption}<PageChip text={block.page} />{block.redrawn && <small>{block.redrawn}</small>}</figcaption>
     </figure>
     case 'callout': return <div className={`callout ${block.kind}`}><b>{calloutTitle[block.kind]}</b><span>{block.text}</span></div>
+    case 'flow': return <div className="note-flow">
+      <div className="table-caption">{block.caption}<PageChip text={block.page} /></div>
+      <ol className="flow-steps">{block.steps.map((st, i) => {
+        const newPhase = st.phase && st.phase !== block.steps[i - 1]?.phase
+        return <li key={i} className="flow-step">
+          {newPhase && <span className="flow-phase">{st.phase}</span>}
+          <div className="flow-box"><span className="flow-no">{i + 1}</span><div><b>{st.label}</b>{st.who && <em className="flow-who">{st.who}</em>}{st.detail && <p>{st.detail}</p>}</div></div>
+        </li>
+      })}</ol>
+      {block.note && <p className="table-note">{block.note}</p>}
+    </div>
   }
 }
 

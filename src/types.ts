@@ -96,12 +96,16 @@ export interface StoredState {
 
 export type Priority = 'S' | 'A' | 'B'
 
+/** 流程圖的一個步驟：label 為步驟名稱；who 為負責者；detail 為重點；phase 為所屬階段（相同 phase 會標成同一組）。 */
+export interface FlowStep { label: string; who?: string; detail?: string; phase?: string }
+
 export type NoteBlock =
   | { type: 'p'; text: string }
   | { type: 'list'; items: string[]; ordered?: boolean }
   | { type: 'table'; caption?: string; head: string[]; rows: string[][]; page: string; note?: string }
   | { type: 'figure'; id: string; caption: string; page: string; redrawn?: string }
   | { type: 'callout'; kind: 'exam' | 'trap' | 'tip' | 'verify'; text: string }
+  | { type: 'flow'; caption: string; steps: FlowStep[]; page: string; note?: string }
 
 export interface NoteSection {
   id: string
