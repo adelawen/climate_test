@@ -5,6 +5,7 @@ import { BookTwo, SectionCard } from './components/BookTwo'
 import { book1ExtraChapters, book1ExtraSections } from './data/book1Extra'
 import { PageLabelContext } from './lib/labelContext'
 import { BookThree } from './components/BookThree'
+import { BookFour } from './components/BookFour'
 import { formatDuration, grade, makeSession, seededShuffle } from './lib/exam'
 import { emptyState, loadState, saveState, wrongQuestionIds } from './lib/storage'
 import type { ActiveSession, Attempt, StoredState } from './types'
@@ -160,7 +161,7 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
   const [session, setSession] = useState<ActiveSession | null>(state.activeSession)
   const [result, setResult] = useState<Attempt | null>(null)
   const [now, setNow] = useState(Date.now())
-  const [scope, setScope] = useState<'all' | 1 | 2 | 3>('all')
+  const [scope, setScope] = useState<'all' | 1 | 2 | 3 | 4>('all')
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t) }, [])
   useEffect(() => { if (session?.deadlineAt && now >= session.deadlineAt) submit(true) }, [now, session?.deadlineAt])
   const syncSession = (next: ActiveSession | null) => { setSession(next); setState({ ...state, activeSession: next }) }
@@ -191,7 +192,7 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
   const avgTime = mockAttempts.length ? Math.round(mockAttempts.reduce((sum, a) => sum + a.durationSeconds, 0) / mockAttempts.length) : 0
   const wrongCount = wrongQuestionIds(attempts).length
   return <main className="practice-page">
-    <section className="practice-hero"><div><div className="eyebrow">PRACTICE DASHBOARD</div><h1>把讀過的，<br/><em>變成拿得到的分數。</em></h1><p>你的進度與作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>{scope === 'all' ? '第一、二、三冊' : scope === 1 ? '第一冊' : scope === 2 ? '第二冊' : '第三冊'}</b></div></section>
+    <section className="practice-hero"><div><div className="eyebrow">PRACTICE DASHBOARD</div><h1>把讀過的，<br/><em>變成拿得到的分數。</em></h1><p>你的進度與作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>{scope === 'all' ? '第一至四冊' : scope === 1 ? '第一冊' : scope === 2 ? '第二冊' : scope === 3 ? '第三冊' : '第四冊'}</b></div></section>
     <section className="stats-grid">
       <article><span>{icons.check}</span><p>完成測驗</p><b>{attempts.length}</b><small>次</small></article>
       <article><span>{icons.spark}</span><p>個人最佳</p><b>{scores.length ? Math.max(...scores) : '—'}</b><small>{scores.length ? '分' : '尚無紀錄'}</small></article>
@@ -200,7 +201,7 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
     </section>
     <section className="practice-content">
       <div><div className="section-heading compact"><span className="section-number">01</span><div><span className="kicker">CHOOSE A MODE</span><h2>開始練習</h2></div></div>
-        <div className="scope-picker" role="radiogroup" aria-label="題庫範圍">{([['all', `第一＋二＋三冊（共 ${allQuestions.length} 題）`], [1, `第一冊（${bookQuestions(1).length} 題）`], [2, `第二冊（${bookQuestions(2).length} 題）`], [3, `第三冊（${bookQuestions(3).length} 題）`]] as const).map(([v,l]) => <button key={String(v)} role="radio" aria-checked={scope === v} className={scope === v ? 'selected' : ''} onClick={() => setScope(v)}>{l}</button>)}</div>
+        <div className="scope-picker" role="radiogroup" aria-label="題庫範圍">{([['all', `第一至四冊（共 ${allQuestions.length} 題）`], [1, `第一冊（${bookQuestions(1).length} 題）`], [2, `第二冊（${bookQuestions(2).length} 題）`], [3, `第三冊（${bookQuestions(3).length} 題）`], [4, `第四冊（${bookQuestions(4).length} 題）`]] as const).map(([v,l]) => <button key={String(v)} role="radio" aria-checked={scope === v} className={scope === v ? 'selected' : ''} onClick={() => setScope(v)}>{l}</button>)}</div>
         <div className="mode-grid">
           <ModeCard label="暖身" title="單元練習" detail="10 題 · 不限時" text="快速確認剛讀完的概念，適合每天開始時暖機。" onClick={() => start('unit')}/>
           <ModeCard label="正式規格" title="50 題模擬測驗" detail="90 分鐘 · 每題 2 分" text="固定倒數、離頁不停，60 分及格。範圍依上方選擇。" onClick={() => start('mock')} featured/>
@@ -249,6 +250,6 @@ export default function App() {
   const route = useHashRoute()
   const [state, setStateValue] = useState<StoredState>(() => typeof localStorage === 'undefined' ? emptyState : loadState())
   const setState = (next: StoredState) => { setStateValue(next); saveState(next) }
-  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
-  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07 · 第三冊核對日 2026.11.11</small></footer></>
+  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : route.id === 4 ? <BookFour state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
+  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07 · 第三冊核對日 2026.11.11 · 第四冊核對日 2026.11.18</small></footer></>
 }
