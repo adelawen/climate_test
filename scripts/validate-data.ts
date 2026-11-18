@@ -1,6 +1,10 @@
 import { questions } from '../src/data/questions'
 import { questions2 } from '../src/data/questions2'
 import { questions3 } from '../src/data/questions3'
+import { questions1x } from '../src/data/extra/q1x'
+import { questions2x } from '../src/data/extra/q2x'
+import { questions3x } from '../src/data/extra/q3x'
+import { book1ExtraSections } from '../src/data/book1Extra'
 import { book3Sections } from '../src/data/book3'
 import { pageRefsValid } from '../src/lib/pages3'
 import { book2Sections } from '../src/data/book2'
@@ -8,12 +12,15 @@ import { pdfLocate } from '../src/lib/pages'
 import type { Question } from '../src/types'
 
 const errors: string[] = []
-const all = [...questions, ...questions2, ...questions3]
+const all = [...questions, ...questions1x, ...questions2, ...questions2x, ...questions3, ...questions3x]
 
 const specs: { name: string; list: Question[]; count: number; mix?: Record<string, number>; maxSpread: number }[] = [
   { name: '第一冊', list: questions, count: 120, mix: { 教材重點: 90, 官方題型: 15, 情境整合: 15 }, maxSpread: 3 },
   { name: '第二冊', list: questions2, count: questions2.length, maxSpread: 2 },
   { name: '第三冊', list: questions3, count: questions3.length, maxSpread: 1 },
+  { name: '第一冊加強', list: questions1x, count: questions1x.length, maxSpread: 1 },
+  { name: '第二冊加強', list: questions2x, count: questions2x.length, maxSpread: 1 },
+  { name: '第三冊加強', list: questions3x, count: questions3x.length, maxSpread: 1 },
 ]
 for (const spec of specs) {
   const { list } = spec
@@ -58,11 +65,23 @@ for (const s of book3Sections) {
     if ((b.type === 'table' || b.type === 'figure') && !pageRefsValid(b.page)) errors.push(`${s.id}: 表格或圖頁碼不合法（${b.page}）`)
   }
 }
-for (const q of questions3) {
+for (const q of [...questions3, ...questions3x]) {
   if (q.kind === '熱議考點' && q.pages.startsWith('非教材')) continue
   if (!pageRefsValid(q.pages)) errors.push(`${q.id}: 題目頁碼不合法（${q.pages}）`)
 }
 console.log(`✓ 第三冊筆記 ${book3Sections.length} 節，表格 ${book3Sections.flatMap((s) => s.blocks).filter((b) => b.type === 'table').length}`)
+for (const q of [...questions1x, ...questions2x, ...questions3x]) {
+  if (q.bookId === 1 && !q.pages.startsWith('補充')) errors.push(`${q.id}: 第一冊加強題頁碼應標「補充」`)
+  if (q.bookId === 2 && !/講義 p\.\d+/.test(q.pages)) errors.push(`${q.id}: 第二冊加強題缺講義頁碼`)
+  if (q.mutable === undefined) errors.push(`${q.id}: 缺 mutable`)
+}
+const ids1x = new Set<string>()
+for (const s of book1ExtraSections) {
+  if (ids1x.has(s.id)) errors.push(`第一冊補充筆記 ID 重複：${s.id}`)
+  ids1x.add(s.id)
+  for (const b of s.blocks) if ((b.type === 'table' || b.type === 'figure') && !b.page) errors.push(`${s.id}: 表格缺來源`)
+}
+console.log(`✓ 第一冊補充筆記 ${book1ExtraSections.length} 節`)
 if (errors.length) {
   console.error(errors.join('\n'))
   process.exit(1)

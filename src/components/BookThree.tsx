@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { book3Chapters, book3CheckedOn, book3Sections, book3SourceNote } from '../data/book3'
-import { questions3 } from '../data/questions3'
+import { bookQuestions } from '../data/allQuestions'
+const questions3 = bookQuestions(3)
 import { pageLabel3 } from '../lib/pages3'
 import { PageLabelContext } from '../lib/labelContext'
 import type { NoteSection, Priority, StoredState } from '../types'
