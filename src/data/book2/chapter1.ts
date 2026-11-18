@@ -113,6 +113,30 @@ export const chapter1: NoteSection[] = [
     ],
   },
   {
+    id: 'lca-flow-review', chapter: '壹、生命週期評估', title: '★ 流程總複習：LCA 四階段與盤查分析操作流程', pages: '講義 p.5–11', priority: 'S',
+    officialHits: '四階段排序；「哪一步屬於哪一階段」；LCI 操作順序；LCIA 三步驟',
+    blocks: [
+      { type: 'flow', caption: 'LCA 四階段：每一階段的產出', page: '講義 p.5–11', steps: [
+        { label: '目的與範疇界定', detail: '決定為什麼做、給誰看；訂功能單位、系統界限、分配原則、截斷準則、數據品質要求。產出：研究計畫的「規格書」。' },
+        { label: '盤查分析（LCI）', detail: '依範疇蒐集各單元過程的投入與產出，做質能平衡確證，換算到功能單位。產出：盤查清單。' },
+        { label: '衝擊評估（LCIA）', detail: '分類 → 特徵化 → 評價，把清單轉成各類環境衝擊（如以 GWP 換算 CO₂e）。產出：衝擊指標。' },
+        { label: '闡釋', detail: '把盤查與衝擊評估結果對回目的與範疇，反映敏感度分析，提出結論與建議。產出：給決策者的結論。' },
+      ], note: '四階段是反覆的：闡釋或盤查時發現問題，可以回頭修正範疇（例如修正系統界限）。' },
+      { type: 'flow', caption: '圖 1.3　盤查分析（LCI）操作流程', page: '講義 p.9', steps: [
+        { phase: '資料蒐集', label: '準備數據蒐集', detail: '依範疇界定擬定蒐集表單與計畫。' },
+        { phase: '資料蒐集', label: '蒐集數據', detail: '能源、原物料、輔助投入；產品、聯產品、廢棄物；空氣、水體、土壤排放。' },
+        { phase: '計算程序', label: '確認數據', detail: '質量平衡、能量平衡、排放係數比較。' },
+        { phase: '計算程序', label: '數據與單元過程的關聯', detail: '必要時做分配，並處理再使用與回收。' },
+        { phase: '計算程序', label: '數據與功能單位的關聯', detail: '經由參考流換算到功能單位。' },
+        { phase: '計算程序', label: '數據合併' },
+        { phase: '計算程序', label: '修正系統界限', detail: '依敏感度分析與截斷準則判斷數據是否納入；不足就回到蒐集。' },
+        { phase: '計算程序', label: '完成盤查' },
+      ] },
+      { type: 'callout', kind: 'tip', text: '口訣：四階段「目盤衝闡」；LCI「備、蒐、確、單元、功能、合、修」；LCIA「分、特、評」。' },
+      { type: 'callout', kind: 'trap', text: '分配是在「盤查分析」裡處理（數據與單元過程的關聯），不是衝擊評估；但「要用什麼分配原則」是在目的與範疇界定時就先決定。' },
+    ],
+  },
+  {
     id: 'iso-standards', chapter: '壹、生命週期評估', title: 'ISO 14067、CNS 14067 與標準家族關係', pages: '講義 p.12–15', priority: 'S',
     officialHits: '7月 #2、11月 #7（標準名稱對照題常見）',
     blocks: [
