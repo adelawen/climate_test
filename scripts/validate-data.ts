@@ -5,6 +5,10 @@ import { questions1x } from '../src/data/extra/q1x'
 import { questions2x } from '../src/data/extra/q2x'
 import { questions3x } from '../src/data/extra/q3x'
 import { book1ExtraSections } from '../src/data/book1Extra'
+import { questions4 } from '../src/data/book4/questions'
+import { book4Sections, book4Chapters } from '../src/data/book4'
+import { pageRefsValid4 } from '../src/lib/pages4'
+import { reviewSections, reviewChapters } from '../src/data/review'
 import { book3Sections } from '../src/data/book3'
 import { pageRefsValid } from '../src/lib/pages3'
 import { book2Sections } from '../src/data/book2'
@@ -12,7 +16,7 @@ import { pdfLocate } from '../src/lib/pages'
 import type { Question } from '../src/types'
 
 const errors: string[] = []
-const all = [...questions, ...questions1x, ...questions2, ...questions2x, ...questions3, ...questions3x]
+const all = [...questions, ...questions1x, ...questions2, ...questions2x, ...questions3, ...questions3x, ...questions4]
 
 const specs: { name: string; list: Question[]; count: number; mix?: Record<string, number>; maxSpread: number }[] = [
   { name: '第一冊', list: questions, count: 120, mix: { 教材重點: 90, 官方題型: 15, 情境整合: 15 }, maxSpread: 3 },
@@ -21,6 +25,7 @@ const specs: { name: string; list: Question[]; count: number; mix?: Record<strin
   { name: '第一冊加強', list: questions1x, count: questions1x.length, maxSpread: 1 },
   { name: '第二冊加強', list: questions2x, count: questions2x.length, maxSpread: 1 },
   { name: '第三冊加強', list: questions3x, count: questions3x.length, maxSpread: 1 },
+  { name: '第四冊', list: questions4, count: questions4.length, maxSpread: 1 },
 ]
 for (const spec of specs) {
   const { list } = spec
@@ -82,6 +87,29 @@ for (const s of book1ExtraSections) {
   for (const b of s.blocks) if ((b.type === 'table' || b.type === 'figure' || b.type === 'flow') && !b.page) errors.push(`${s.id}: 表格缺來源`)
 }
 console.log(`✓ 第一冊補充筆記 ${book1ExtraSections.length} 節`)
+const ids4 = new Set<string>()
+for (const s of book4Sections) {
+  if (ids4.has(s.id)) errors.push(`第四冊筆記 ID 重複：${s.id}`)
+  ids4.add(s.id)
+  if (!book4Chapters.includes(s.chapter)) errors.push(`${s.id}: 章節不在第四冊章節表`)
+  if (!pageRefsValid4(s.pages)) errors.push(`${s.id}: 第四冊頁碼不合法（${s.pages}）`)
+  for (const b of s.blocks) if ((b.type === 'table' || b.type === 'figure' || b.type === 'flow') && !pageRefsValid4(b.page)) errors.push(`${s.id}: 第四冊表格頁碼不合法（${b.page}）`)
+}
+for (const q of questions4) {
+  if (!pageRefsValid4(q.pages)) errors.push(`${q.id}: 第四冊題目頁碼不合法（${q.pages}）`)
+  if (!book4Chapters.includes(q.chapter)) errors.push(`${q.id}: 章節不在第四冊章節表`)
+}
+for (const c of book4Chapters) if (!questions4.some((q) => q.chapter === c)) errors.push(`第四冊「${c}」沒有題目`)
+console.log(`✓ 第四冊筆記 ${book4Sections.length} 節，表格 ${book4Sections.flatMap((s) => s.blocks).filter((b) => b.type === 'table').length}、流程圖 ${book4Sections.flatMap((s) => s.blocks).filter((b) => b.type === 'flow').length}`)
+const idsR = new Set<string>()
+for (const s of reviewSections) {
+  if (idsR.has(s.id)) errors.push(`速讀頁 ID 重複：${s.id}`)
+  idsR.add(s.id)
+  if (!reviewChapters.includes(s.chapter)) errors.push(`${s.id}: 速讀頁章節不存在`)
+  if (!s.pages) errors.push(`${s.id}: 速讀頁缺來源`)
+}
+for (const c of reviewChapters) if (!reviewSections.some((s) => s.chapter === c)) errors.push(`速讀頁「${c}」沒有內容`)
+console.log(`✓ 考前速讀 ${reviewSections.length} 節（流程圖 ${reviewSections.filter((s) => s.id.startsWith('flow-')).length} 張）`)
 if (errors.length) {
   console.error(errors.join('\n'))
   process.exit(1)
