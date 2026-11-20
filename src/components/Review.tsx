@@ -44,7 +44,7 @@ export function Review({ state, setState }: { state: StoredState; setState: (s: 
         <div className="hero-meta"><span>◷ 距 11/21 考試 <b>{days} 天</b></span><span>✓ 已讀 <b>{done}/{ids.length}</b> 節</span><span>⇢ 流程圖 <b>{flowCount}</b> 張</span></div>
       </section>
 
-      <section className="warning"><span>!</span><div><b>建議讀法</b><p>考前一天：先讀「一、你問過的問題」與「七、跨領域整合題」，再看「二、年代時間軸」。考前一小時：用下方搜尋框找你最不熟的關鍵字（例如「K 值」「免確證」「搖籃到大門」），只看那幾節。第八章的流程圖是從各冊自動彙整的，各冊更新時這裡會同步。</p></div></section>
+      <section className="warning"><span>!</span><div><b>建議讀法</b><p>考前一天：先讀「一、你問過的問題」與「七、跨領域整合題」，再看「二、年代時間軸」與「八、期限・效期・補正天數比較」。考前一小時：用下方搜尋框找你最不熟的關鍵字（例如「K 值」「免確證」「搖籃到大門」），只看那幾節。第九章的流程圖是從各冊自動彙整的，各冊更新時這裡會同步。</p></div></section>
 
       <div className="note-filter" id="rv-notes">
         <div className="chips" role="tablist" aria-label="章節">
