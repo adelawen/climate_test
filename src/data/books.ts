@@ -25,14 +25,22 @@ export const books: Book[] = [
     chapters: ['盤查制度與列管對象', '邊界與排放源鑑別', '排放量計算', '數據品質與報告書', '登錄與查驗', '盤查計算案例', '碳定價與減量額度', '自願減量專案', '專案計畫與案例', '確證與查證重點'],
     completion: 100,
   },
-  ...[4, 5].map((id) => ({
-    id,
-    title: `第${['', '', '', '三', '四', '五'][id]}冊｜待上傳`,
-    shortTitle: `第${['', '', '', '三', '四', '五'][id]}冊`,
-    status: 'pending' as const,
+  {
+    id: 4,
+    title: '第四冊｜氣候法制與碳費',
+    shortTitle: '第四冊',
+    status: 'ready',
     chapters: [],
-    completion: 0,
-  })),
+    completion: 100,
+  },
+  {
+    id: 5,
+    title: '2026/11/21 考試試題回顧',
+    shortTitle: '11/21 考題',
+    status: 'ready',
+    chapters: [],
+    completion: 100,
+  },
 ]
 
 export const knowledgePoints: KnowledgePoint[] = [

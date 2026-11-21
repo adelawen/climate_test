@@ -11,7 +11,7 @@ export const priorityText: Record<Priority, string> = { S: 'S 必考', A: 'A 常
 
 function PageChip({ text }: { text: string }) {
   const label = useContext(PageLabelContext)
-  return <span className="page-chip" title="講義頁碼（括號內為掃描檔中的位置）">📖 {label(text)}</span>
+  return <span className="page-chip" title="講義頁碼（括號內為掃描檔中的位置）">{label(text)}</span>
 }
 
 export function Block({ block }: { block: NoteBlock }) {
@@ -55,7 +55,7 @@ export function SectionCard({ section, read, toggle }: { section: NoteSection; r
       {section.officialHits && <p className="hits">命題線索：{section.officialHits}</p>}
     </header>
     <div className="note-body">{section.blocks.map((b, i) => <Block key={i} block={b} />)}</div>
-    <footer><button onClick={toggle}>{read ? '✓ 已讀' : '標記已讀'}</button></footer>
+    <footer><button onClick={toggle}>{read ? '已讀' : '標記已讀'}</button></footer>
   </article>
 }
 
@@ -78,7 +78,7 @@ export function BookTwo({ state, setState }: { state: StoredState; setState: (s:
       <h1>產品碳足跡<br /><em>從 LCA 到碳標籤，一次看懂</em></h1>
       <p>依講義 p.1–87 整理成章節式詳細筆記：每個重點、表格與圖都標出「講義頁碼」與掃描檔位置，方便你對照原書。圖為重新繪製，並非掃描圖。</p>
       <div className="hero-actions"><a className="primary" href="#b2-notes">開始閱讀</a><a className="secondary" href="#/practice">刷第二冊題 →</a></div>
-      <div className="hero-meta"><span>◷ 距 11/21 考試 <b>{days} 天</b></span><span>✓ 已讀 <b>{done}/{ids.length}</b> 節</span></div>
+      <div className="hero-meta"><span>考試日 <b>2026/11/21</b>{days ? `（剩 ${days} 天）` : '（已考完）'}</span><span>已讀 <b>{done}/{ids.length}</b> 節</span></div>
     </section>
 
     <section className="overview">
