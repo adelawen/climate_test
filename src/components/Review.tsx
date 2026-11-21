@@ -41,7 +41,7 @@ export function Review({ state, setState }: { state: StoredState; setState: (s: 
         <h1>考前速讀<br /><em>問過的問題、年代、流程、四大題型一頁看完</em></h1>
         <p>把你問過的問題、各冊最愛考的年代、全部流程圖，以及課程分析點名的四大題型（制度與政策、盤查與查驗、市場與專案、產品碳足跡）和跨領域整合題，整理成考前最後一輪的速讀筆記。每節都標出來源冊別與頁碼，想深入就回到該冊。</p>
         <div className="hero-actions"><a className="primary" href="#rv-notes">開始速讀</a><a className="secondary" href="#/practice">去刷題 →</a></div>
-        <div className="hero-meta"><span>◷ 距 11/21 考試 <b>{days} 天</b></span><span>✓ 已讀 <b>{done}/{ids.length}</b> 節</span><span>⇢ 流程圖 <b>{flowCount}</b> 張</span></div>
+        <div className="hero-meta"><span>考試日 <b>2026/11/21</b>{days ? `（剩 ${days} 天）` : '（已考完）'}</span><span>已讀 <b>{done}/{ids.length}</b> 節</span><span>流程圖 <b>{flowCount}</b> 張</span></div>
       </section>
 
       <section className="warning"><span>!</span><div><b>建議讀法</b><p>考前一天：先讀「一、你問過的問題」與「七、跨領域整合題」，再看「二、年代時間軸」與「八、期限・效期・補正天數比較」。考前一小時：用下方搜尋框找你最不熟的關鍵字（例如「K 值」「免確證」「搖籃到大門」），只看那幾節。第九章的流程圖是從各冊自動彙整的，各冊更新時這裡會同步。</p></div></section>

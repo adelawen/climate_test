@@ -34,7 +34,7 @@ export function BookThree({ state, setState }: { state: StoredState; setState: (
         <h1>盤查與自願減量<br /><em>從盤查登錄到減量額度，一次串起來</em></h1>
         <p>把「溫室氣體盤查作業」與「自願減量與減量額度」兩大主題，整理成章節式筆記與題庫。每個重點、表格都標出講義頁碼與掃描檔位置，方便回頭對照原書。</p>
         <div className="hero-actions"><a className="primary" href="#b3-notes">開始閱讀</a><a className="secondary" href="#/practice">刷第三冊題 →</a></div>
-        <div className="hero-meta"><span>◷ 距 11/21 考試 <b>{days} 天</b></span><span>✓ 已讀 <b>{done}/{ids.length}</b> 節</span></div>
+        <div className="hero-meta"><span>考試日 <b>2026/11/21</b>{days ? `（剩 ${days} 天）` : '（已考完）'}</span><span>已讀 <b>{done}/{ids.length}</b> 節</span></div>
       </section>
 
       <section className="overview">

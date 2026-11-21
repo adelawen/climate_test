@@ -7,13 +7,14 @@ import { PageLabelContext } from './lib/labelContext'
 import { BookThree } from './components/BookThree'
 import { BookFour } from './components/BookFour'
 import { Review } from './components/Review'
+import { ExamRecall } from './components/ExamRecall'
 import { formatDuration, grade, makeSession, seededShuffle } from './lib/exam'
 import { emptyState, loadState, saveState, wrongQuestionIds } from './lib/storage'
 import type { ActiveSession, Attempt, StoredState } from './types'
 
 type Route = { kind: 'book'; id: number } | { kind: 'practice' } | { kind: 'review' }
 
-const icons = { leaf: '◒', clock: '◷', check: '✓', spark: '✦', chart: '↗' }
+const icons = { clock: '剩餘', check: '01', spark: '02', chart: '03', time: '04' }
 
 function readRoute(): Route {
   const hash = location.hash.replace('#', '')
@@ -40,11 +41,11 @@ function Header({ route }: { route: Route }) {
   const active = (id: number) => route.kind === 'book' && route.id === id
   return <header className="site-header">
     <a className="brand" href="#/book/1" aria-label="淨零研習所首頁">
-      <span className="brand-mark">{icons.leaf}</span><span><b>淨零研習所</b><small>NET ZERO LEARNING LAB</small></span>
+      <span className="brand-mark">淨零</span><span><b>淨零研習所</b><small>綠領人才考試筆記</small></span>
     </a>
     <button className="menu-button" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="開啟導覽">☰</button>
     <nav className={open ? 'nav open' : 'nav'} aria-label="主要導覽" onClick={() => setOpen(false)}>
-      {books.map((book) => <a key={book.id} className={active(book.id) ? 'active' : ''} href={`#/book/${book.id}`}>第{['一','二','三','四','五'][book.id - 1]}冊</a>)}
+      {books.map((book) => <a key={book.id} className={active(book.id) ? 'active' : ''} href={`#/book/${book.id}`}>{book.shortTitle}</a>)}
       <a className={route.kind === 'review' ? 'active' : ''} href="#/review">考前速讀</a>
       <a className={route.kind === 'practice' ? 'active accent' : 'accent'} href="#/practice">考前刷題</a>
     </nav>
@@ -70,7 +71,7 @@ function BookOne({ state, setState }: { state: StoredState; setState: (s: Stored
       <h1>淨零排放國際趨勢<br/><em>從零開始，看懂全球規則</em></h1>
       <p>把 54 頁掃描教材、手寫註記與示範題型，整理成可讀、可背、可檢查的第一冊學習路徑。</p>
       <div className="hero-actions"><a className="primary" href="#knowledge">開始學習</a><a className="secondary" href="#/practice">直接刷題 →</a></div>
-      <div className="hero-meta"><span>{icons.clock} 距 11/21 考試 <b>{days} 天</b></span><span>{icons.check} 已讀 <b>{done}/{knowledgePoints.length}</b> 個重點</span></div>
+      <div className="hero-meta"><span>考試日 <b>2026/11/21</b>{days ? `（剩 ${days} 天）` : '（已考完）'}</span><span>已讀 <b>{done}/{knowledgePoints.length}</b> 個重點</span></div>
     </section>
 
     <section className="overview">
@@ -106,7 +107,7 @@ function Notes({ toggleRead, readIds }: { toggleRead: (id: string) => void; read
           <h3>{point.title}</h3><p>{point.plain}</p>
           <div className="must-know"><b>必背</b>{point.mustKnow.join('；')}</div>
           <div className="trap"><b>易錯</b>{point.traps.join('；')}</div>
-          <footer><small>{point.pages} · 核對 {point.checkedOn}</small><button onClick={() => toggleRead(point.id)}>{read ? '✓ 已讀' : '標記已讀'}</button></footer>
+          <footer><small>{point.pages} · 核對 {point.checkedOn}</small><button onClick={() => toggleRead(point.id)}>{read ? '已讀' : '標記已讀'}</button></footer>
         </article>
       })}</div>
     </section>
@@ -195,12 +196,12 @@ function Practice({ state, setState }: { state: StoredState; setState: (s: Store
   const avgTime = mockAttempts.length ? Math.round(mockAttempts.reduce((sum, a) => sum + a.durationSeconds, 0) / mockAttempts.length) : 0
   const wrongCount = wrongQuestionIds(attempts).length
   return <main className="practice-page">
-    <section className="practice-hero"><div><div className="eyebrow">PRACTICE DASHBOARD</div><h1>把讀過的，<br/><em>變成拿得到的分數。</em></h1><p>你的進度與作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>{scope === 'all' ? '第一至四冊' : scope === 1 ? '第一冊' : scope === 2 ? '第二冊' : scope === 3 ? '第三冊' : '第四冊'}</b></div></section>
+    <section className="practice-hero"><div><div className="eyebrow">練習中心</div><h1>考前刷題<br/><em>模擬測驗、單元練習、錯題重練</em></h1><p>作答紀錄只保存在這台瀏覽器。</p></div><div className="scope-badge">目前範圍<br/><b>{scope === 'all' ? '第一至四冊' : scope === 1 ? '第一冊' : scope === 2 ? '第二冊' : scope === 3 ? '第三冊' : '第四冊'}</b></div></section>
     <section className="stats-grid">
       <article><span>{icons.check}</span><p>完成測驗</p><b>{attempts.length}</b><small>次</small></article>
       <article><span>{icons.spark}</span><p>個人最佳</p><b>{scores.length ? Math.max(...scores) : '—'}</b><small>{scores.length ? '分' : '尚無紀錄'}</small></article>
       <article><span>{icons.chart}</span><p>平均分數</p><b>{scores.length ? Math.round(scores.reduce((a,b) => a+b,0)/scores.length) : '—'}</b><small>{scores.length ? '分' : '尚無紀錄'}</small></article>
-      <article><span>{icons.clock}</span><p>模考平均用時</p><b>{avgTime ? formatDuration(avgTime) : '—'}</b><small>{avgTime ? '分:秒' : '尚無紀錄'}</small></article>
+      <article><span>{icons.time}</span><p>模考平均用時</p><b>{avgTime ? formatDuration(avgTime) : '—'}</b><small>{avgTime ? '分:秒' : '尚無紀錄'}</small></article>
     </section>
     <section className="practice-content">
       <div><div className="section-heading compact"><span className="section-number">01</span><div><span className="kicker">CHOOSE A MODE</span><h2>開始練習</h2></div></div>
@@ -253,6 +254,6 @@ export default function App() {
   const route = useHashRoute()
   const [state, setStateValue] = useState<StoredState>(() => typeof localStorage === 'undefined' ? emptyState : loadState())
   const setState = (next: StoredState) => { setStateValue(next); saveState(next) }
-  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.kind === 'review' ? <Review state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : route.id === 4 ? <BookFour state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
-  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07 · 第三冊核對日 2026.11.11 · 第四冊核對日 2026.11.18</small></footer></>
+  const content = useMemo(() => route.kind === 'practice' ? <Practice state={state} setState={setState}/> : route.kind === 'review' ? <Review state={state} setState={setState}/> : route.id === 1 ? <BookOne state={state} setState={setState}/> : route.id === 2 ? <BookTwo state={state} setState={setState}/> : route.id === 3 ? <BookThree state={state} setState={setState}/> : route.id === 4 ? <BookFour state={state} setState={setState}/> : route.id === 5 ? <ExamRecall state={state} setState={setState}/> : <PendingBook id={route.id}/>, [route, state])
+  return <><Header route={route}/>{content}<footer className="site-footer"><b>淨零研習所</b><span>教材學習輔助工具 · 非環境部官方網站</span><small>第一冊核對日 2026.09.12 · 第二冊核對日 2026.11.07 · 第三冊核對日 2026.11.11 · 第四冊核對日 2026.11.18 · 11/21 考題整理 2026.11.21</small></footer></>
 }

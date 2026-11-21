@@ -34,7 +34,7 @@ export function BookFour({ state, setState }: { state: StoredState; setState: (s
         <h1>氣候法制與碳費<br /><em>從排放清冊、盤查管理到碳費與自主減量</em></h1>
         <p>把我國氣候法制的考點一次整理：國家排放清冊與六大部門、資訊公開、調適、公正轉型、盤查與查驗機構管理、碳費三項子法、自主減量計畫與指定目標、減量額度配套法規。最後一章專門比較和前三冊容易混淆的制度與數字。</p>
         <div className="hero-actions"><a className="primary" href="#b4-notes">開始閱讀</a><a className="secondary" href="#/practice">刷第四冊題 →</a></div>
-        <div className="hero-meta"><span>◷ 距 11/21 考試 <b>{days} 天</b></span><span>✓ 已讀 <b>{done}/{ids.length}</b> 節</span></div>
+        <div className="hero-meta"><span>考試日 <b>2026/11/21</b>{days ? `（剩 ${days} 天）` : '（已考完）'}</span><span>已讀 <b>{done}/{ids.length}</b> 節</span></div>
       </section>
 
       <section className="overview">
